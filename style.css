@@ -1,0 +1,175 @@
+/* Reality Bender - Core Styles */
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #1a1a1a;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+}
+
+#gameArea {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: radial-gradient(circle at center, #2a2a2a 0%, #0a0a0a 100%);
+}
+
+/* Player Character */
+.player {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(45deg, #ffffff, #e0e0e0);
+    position: absolute;
+    border-radius: 50%;
+    transition: 
+        transform 0.6s ease-in-out,
+        box-shadow 0.3s ease;
+    box-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.5),
+        0 0 30px rgba(255, 255, 255, 0.2);
+    animation: float 3s ease-in-out infinite;
+}
+
+.player.gravity-changed {
+    transform: rotate(180deg);
+    background: linear-gradient(45deg, #e0e0e0, #ffffff);
+}
+
+/* Dimensions Visual Effects */
+.dimension2 {
+    filter: hue-rotate(180deg) contrast(150%) saturate(200%);
+    background: radial-gradient(circle at center, #3a2a4a 0%, #1a0a2a 100%);
+}
+
+.dimension3 {
+    filter: sepia(100%) blur(1px) brightness(80%);
+    background: radial-gradient(circle at center, #2a4a3a 0%, #0a2a1a 100%);
+}
+
+.dimension2 .player {
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    box-shadow: 
+        0 0 20px rgba(255, 0, 255, 0.6),
+        0 0 40px rgba(0, 255, 255, 0.3);
+}
+
+.dimension3 .player {
+    background: linear-gradient(45deg, #ffff00, #ff9900);
+    box-shadow: 
+        0 0 20px rgba(255, 255, 0, 0.6),
+        0 0 40px rgba(255, 153, 0, 0.3);
+}
+
+/* Obstacles & Environment */
+.obstacle {
+    width: 60px;
+    height: 60px;
+    background: #ff3366;
+    position: absolute;
+    border-radius: 15px;
+    animation: pulse 2s infinite;
+    transition: all 0.3s ease;
+}
+
+#goal {
+    width: 40px;
+    height: 40px;
+    background: #00ff88;
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 136, 0.5),
+        0 0 40px rgba(0, 255, 136, 0.2);
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Time Manipulation Effects */
+.time-reversed {
+    filter: grayscale(80%) blur(1px);
+    animation: time-distortion 0.5s infinite;
+}
+
+.paradox-effect {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(255,255,255,0.1) 10px,
+            rgba(255,255,255,0.1) 20px
+        );
+    pointer-events: none;
+}
+
+/* UI Elements */
+.instructions {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+}
+
+.victory-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 2rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 2px solid #00ff88;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes time-distortion {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes dimension-shift {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Interactive Feedback */
+.key-pressed {
+    transform: scale(0.95);
+    filter: brightness(120%);
+}
+
+.reality-alert {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border-left: 4px solid #00ff88;
+    animation: slideIn 0.5s ease-out;
+}
