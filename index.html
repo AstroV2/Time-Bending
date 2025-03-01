@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reality Bender</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        #gameArea {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            transition: filter 0.5s;
+        }
+
+        .player {
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            position: absolute;
+            transition: transform 0.3s;
+        }
+
+        .obstacle {
+            width: 60px;
+            height: 60px;
+            background: #f00;
+            position: absolute;
+        }
+
+        .dimension2 {
+            filter: hue-rotate(180deg) invert(100%);
+        }
+
+        .dimension3 {
+            filter: sepia(100%) blur(1px);
+        }
+
+        .gravity-changed {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <div id="player" class="player"></div>
+        <div class="obstacle" style="top: 300px; left: 400px;"></div>
+        <div id="goal" style="width: 40px; height: 40px; background: #0f0; position: absolute; top: 500px; left: 800px;"></div>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const gameArea = document.getElementById('gameArea');
+        let gravityDirection = 1; // 1 = down, -1 = up
+        let currentDimension = 1;
+        let isTimeReversed = false;
+        let positionHistory = [];
+        
+        // Game state
+        let posX = 50;
+        let posY = 50;
+        let velocity = 0;
+        const gravity = 0.5;
+        const jumpForce = -12;
+
+        // Input handling
+        const keys = {};
+        window.addEventListener('keydown', (e) => keys[e.key] = true);
+        window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+        // Reality manipulation controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'g') toggleGravity();
+            if (e.key === 'd') shiftDimension();
+            if (e.key === 't') reverseTime();
+        });
+
+        function toggleGravity() {
+            gravityDirection *= -1;
+            player.classList.toggle('gravity-changed');
+        }
+
+        function shiftDimension() {
+            currentDimension = currentDimension % 3 + 1;
+            gameArea.className = `dimension${currentDimension}`;
+        }
+
+        function reverseTime() {
+            isTimeReversed = !isTimeReversed;
+            if (isTimeReversed) {
+                positionHistory = [];
+                setInterval(recordPosition, 100);
+            }
+        }
+
+        function recordPosition() {
+            positionHistory.push({x: posX, y: posY});
+            if (positionHistory.length > 50) positionHistory.shift();
+        }
+
+        function updatePlayer() {
+            // Apply gravity
+            velocity += gravity * gravityDirection;
+            posY += velocity;
+            
+            // Movement
+            if (keys.ArrowRight) posX += 5;
+            if (keys.ArrowLeft) posX -= 5;
+            if (keys.ArrowUp && gravityDirection === 1) velocity = jumpForce;
+            if (keys.ArrowDown && gravityDirection === -1) velocity = -jumpForce;
+
+            // Apply time reversal
+            if (isTimeReversed && positionHistory.length > 0) {
+                const pastPos = positionHistory.pop();
+                posX = pastPos.x;
+                posY = pastPos.y;
+            }
+
+            // Update visual position
+            player.style.left = posX + 'px';
+            player.style.top = posY + 'px';
+
+            checkCollisions();
+            requestAnimationFrame(updatePlayer);
+        }
+
+        function checkCollisions() {
+            // Simple collision detection
+            const obstacles = document.getElementsByClassName('obstacle');
+            for(let obstacle of obstacles) {
+                const rect1 = player.getBoundingClientRect();
+                const rect2 = obstacle.getBoundingClientRect();
+                
+                if (!(rect1.right < rect2.left || 
+                      rect1.left > rect2.right || 
+                      rect1.bottom < rect2.top || 
+                      rect1.top > rect2.bottom)) {
+                    resetGame();
+                }
+            }
+        }
+
+        function resetGame() {
+            posX = 50;
+            posY = 50;
+            velocity = 0;
+        }
+
+        // Start game loop
+        updatePlayer();
+    </script>
+</body>
+  <canvas id="gameCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw player
+        ctx.save();
+        if (gravityDirection === -1) {
+            ctx.translate(posX + 15, posY + 15);
+            ctx.rotate(Math.PI);
+            ctx.translate(-posX -15, -posY -15);
+        }
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(posX, posY, 30, 30);
+        ctx.restore();
+        
+        requestAnimationFrame(draw);
+    }
+    
+    draw();
+</script>
+</html>
